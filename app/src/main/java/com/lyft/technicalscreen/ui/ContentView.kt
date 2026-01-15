@@ -9,21 +9,44 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 private val ColorBlue = Color.Blue.copy(red = 0.2f, blue = 0.9f, green = 0.3f, alpha = 0.8f)
 private val ColorYellow = Color.Yellow.copy(red = 0.9f, blue = 0.2f, green = 0.77f, alpha = 0.9f)
 private val ColorGreen = Color.Green.copy(red = 0.02f, blue = 0.16f, green = 0.70f, alpha = 0.8f)
 
 @Composable
-fun ContentView(contentViewViewModel: ContentViewViewModel = viewModel()) {
-    val images = contentViewViewModel.images
+fun ContentView() {
+    val images = remember {
+        mutableListOf(
+            Icons.Default.Face, Icons.Default.Favorite, Icons.Default.Star,
+            Icons.Default.ShoppingCart, Icons.Default.Home, Icons.Default.ThumbUp,
+            Icons.Default.Face, Icons.Default.Favorite, Icons.Default.Star,
+            Icons.Default.ShoppingCart, Icons.Default.Home, Icons.Default.ThumbUp,
+        ).apply { shuffle() }
+    }
+    val state = remember { mutableStateMapOf<ImageVector, MutableList<ImageStatus>>() }
+    LaunchedEffect(Unit) {
+        images.forEachIndexed { index, imageVector ->
+            state.getOrPut(imageVector) { mutableListOf() }
+                .add(ImageStatus(index, false))
+        }
+    }
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -32,7 +55,7 @@ fun ContentView(contentViewViewModel: ContentViewViewModel = viewModel()) {
     ) {
         var i = 0
         items(12) { index ->
-            CardButton(images[index], index, { contentViewViewModel.updateOnClick(it) })
+            CardButton(images[index], index, {})
         }
     }
 }
@@ -50,3 +73,5 @@ private fun CardButton(image: ImageVector, index: Int, onClick: (Int) -> Unit) {
         Image(imageVector = image, "", Modifier.fillMaxSize())
     }
 }
+
+data class ImageStatus(val id: Int, var isEnabled: Boolean)
