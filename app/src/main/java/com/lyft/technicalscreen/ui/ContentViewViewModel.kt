@@ -32,28 +32,17 @@ class ContentViewViewModel : ViewModel() {
     val state = mutableMapOf<ImageVector, MutableList<Pair<Int, Boolean>>>()
 
     init {
-        for (k in keys) {
-            val indexes = findIndex(k)
-            state[k] = mutableListOf(
-                Pair(indexes.first, false), Pair(
-                    indexes.second,
-                    false
-                )
-            )
-
+        images.forEachIndexed { index, imageVector ->
+            state.getOrPut(imageVector) { mutableListOf(index to false) }.add(index to false)
         }
-    }
-
-    private fun findIndex(k: ImageVector): Pair<Int, Int> {
-        return Pair(1, 2)
     }
 
     private val _uiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(UiState.Idle)
     val uiStateFlow = _uiStateFlow.asStateFlow()
 
     fun updateOnClick(index: Int) {
-        when(state[images[index]]){
-            
+        when (state[images[index]]) {
+
         }
 
     }
