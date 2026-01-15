@@ -8,6 +8,8 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class ContentViewViewModel : ViewModel() {
     val images = mutableListOf(
@@ -26,14 +28,17 @@ class ContentViewViewModel : ViewModel() {
     )
     val keys = images.take(6)
     val a = images.shuffle()
-    val b = mutableMapOf<Icons, List<Pair<Int, Boolean>>>()
+    private val _uiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(UiState.Idle)
+    val uiStateFlow = _uiStateFlow.asStateFlow()
+
+    fun updateOnClick(index: Int) {}
     // create a map, keys are the icons and the values are an array of the pairs of indexes and click status
 
 }
 
 sealed interface UiState {
-    data class Match(val index1: Int, val index2: Int)
-    data class OneClick(val index: Int)
-    data class NoMatch(val index: Int)
-    data object Idle
+    data class Match(val index1: Int, val index2: Int) : UiState
+    data class OneClick(val index: Int) : UiState
+    data class NoMatch(val index: Int) : UiState
+    data object Idle : UiState
 }
